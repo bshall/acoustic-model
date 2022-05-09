@@ -8,6 +8,21 @@ matplotlib.use("Agg")
 import matplotlib.pylab as plt
 
 
+class Metric:
+    def __init__(self):
+        self.steps = 0
+        self.value = 0
+
+    def update(self, value):
+        self.steps += 1
+        self.value += (value - self.value) / self.steps
+        return self.value
+
+    def reset(self):
+        self.steps = 0
+        self.value = 0
+
+
 class LogMelSpectrogram(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -34,7 +49,7 @@ class LogMelSpectrogram(torch.nn.Module):
 
 def save_checkpoint(
     checkpoint_dir,
-    synth,
+    acoustic,
     optimizer,
     step,
     loss,
@@ -42,7 +57,7 @@ def save_checkpoint(
     logger,
 ):
     state = {
-        "acoustic-model": synth.module.state_dict(),
+        "acoustic-model": acoustic.module.state_dict(),
         "optimizer": optimizer.state_dict(),
         "step": step,
         "loss": loss,
@@ -58,14 +73,14 @@ def save_checkpoint(
 
 def load_checkpoint(
     load_path,
-    synth,
+    acoustic,
     optimizer,
     rank,
     logger,
 ):
     logger.info(f"Loading checkpoint from {load_path}")
     checkpoint = torch.load(load_path, map_location={"cuda:0": f"cuda:{rank}"})
-    synth.load_state_dict(checkpoint["acoustic-model"])
+    acoustic.load_state_dict(checkpoint["acoustic-model"])
     optimizer.load_state_dict(checkpoint["optimizer"])
     return checkpoint["step"], checkpoint["loss"]
 

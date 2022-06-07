@@ -70,30 +70,26 @@ class Decoder(nn.Module):
         x = res + x
         return self.proj(x)
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def generate(self, xs: torch.Tensor) -> torch.Tensor:
-        cell1 = get_lstm_cell(self.lstm1)
-        cell2 = get_lstm_cell(self.lstm2)
-        cell3 = get_lstm_cell(self.lstm3)
-
         m = torch.zeros(xs.size(0), 128, device=xs.device)
-        h1 = torch.zeros(xs.size(0), 768, device=xs.device)
-        c1 = torch.zeros(xs.size(0), 768, device=xs.device)
-        h2 = torch.zeros(xs.size(0), 768, device=xs.device)
-        c2 = torch.zeros(xs.size(0), 768, device=xs.device)
-        h3 = torch.zeros(xs.size(0), 768, device=xs.device)
-        c3 = torch.zeros(xs.size(0), 768, device=xs.device)
+        h1 = torch.zeros(1, xs.size(0), 768, device=xs.device)
+        c1 = torch.zeros(1, xs.size(0), 768, device=xs.device)
+        h2 = torch.zeros(1, xs.size(0), 768, device=xs.device)
+        c2 = torch.zeros(1, xs.size(0), 768, device=xs.device)
+        h3 = torch.zeros(1, xs.size(0), 768, device=xs.device)
+        c3 = torch.zeros(1, xs.size(0), 768, device=xs.device)
 
         mel = []
         for x in torch.unbind(xs, dim=1):
             m = self.prenet(m)
-            (h1, c1) = cell1(torch.cat((x, m), dim=1), (h1, c1))
-            x = h1
-            (h2, c2) = cell2(h1, (h2, c2))
-            x = x + h2
-            (h3, c3) = cell3(x, (h3, c3))
-            x = x + h3
-            m = self.proj(x)
+            x = torch.cat((x, m), dim=1).unsqueeze(1)
+            x1, (h1, c1) = self.lstm1(x, (h1, c1))
+            x2, (h2, c2) = self.lstm2(x1, (h2, c2))
+            x = x1 + x2
+            x3, (h3, c3) = self.lstm3(x, (h3, c3))
+            x = x + x3
+            m = self.proj(x).squeeze(1)
             mel.append(m)
         return torch.stack(mel, dim=1)
 
@@ -118,15 +114,6 @@ class PreNet(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
-
-
-def get_lstm_cell(lstm: nn.LSTM) -> nn.LSTMCell:
-    lstm_cell = nn.LSTMCell(lstm.input_size, lstm.hidden_size)
-    lstm_cell.weight_hh.data = lstm.weight_hh_l0.data
-    lstm_cell.weight_ih.data = lstm.weight_ih_l0.data
-    lstm_cell.bias_hh.data = lstm.bias_hh_l0.data
-    lstm_cell.bias_ih.data = lstm.bias_ih_l0.data
-    return lstm_cell
 
 
 def _acoustic(

@@ -1,11 +1,16 @@
+<p align="center">
+    <a target="_blank" href="https://colab.research.google.com/github/bshall/soft-vc/blob/main/soft-vc-demo.ipynb">
+        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+</p>
+
 # Acoustic-Model
 
-Training and inference scripts for the acoustic models in [A Comparison of Discrete and Soft Speech Units for Improved Voice Conversion](https://ieeexplore.ieee.org/abstract/document/9746484).
-For more details see [soft-vc](https://github.com/bshall/soft-vc).
+Training and inference scripts for the acoustic models in [A Comparison of Discrete and Soft Speech Units for Improved Voice Conversion](https://ieeexplore.ieee.org/abstract/document/9746484). For more details see [soft-vc](https://github.com/bshall/soft-vc). Audio samples can be found [here](https://bshall.github.io/soft-vc/). Colab demo can be found [here](https://colab.research.google.com/github/bshall/soft-vc/blob/main/soft-vc-demo.ipynb).
 
 <div align="center">
     <img width="100%" alt="Soft-VC"
-      src="https://raw.githubusercontent.com/bshall/hubert/main/diagram.png">
+      src="https://raw.githubusercontent.com/bshall/acoustic-model/main/acoustic-model.png">
 </div>
 <div>
   <sup>

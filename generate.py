@@ -1,4 +1,5 @@
 import argparse
+
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
@@ -8,15 +9,15 @@ import torch
 
 def generate(args):
     print("Loading acoustic model checkpoint")
-    acoustic = torch.hub.load("bshall/acoustic-model:main", args.model).cuda()
+    acoustic = torch.hub.load("bshall/acoustic-model:main", f"hubert_{args.model}").cuda()
 
     print(f"Generating from {args.in_dir} -> {args.out_dir}")
     for path in tqdm(list(args.in_dir.rglob("*.npy"))):
         units = np.load("path")
-        units_dtype = torch.long if args.model == "hubert_discrete" else torch.float
+        units_dtype = torch.long if args.model == "discrete" else torch.float
         units = torch.tensor(units, dtype=units_dtype).cuda()
 
-        with torch.no_grad():
+        with torch.inference_mode():
             mel_ = acoustic.generate(units)
             mel_ = mel_.transpose(1, 2)
 
@@ -30,6 +31,11 @@ if __name__ == "__main__":
         description="Generate spectrograms from input speech units (discrete or soft)."
     )
     parser.add_argument(
+        "model",
+        help="available models (HuBERT-Soft or HuBERT-Discrete)",
+        choices=["soft", "discrete"],
+    )
+    parser.add_argument(
         "in_dir",
         metavar="in-dir",
         help="path to the dataset directory.",
@@ -40,12 +46,6 @@ if __name__ == "__main__":
         metavar="out-dir",
         help="path to the output directory.",
         type=Path,
-    )
-    parser.add_argument(
-        "--model",
-        help="available models",
-        choices=["hubert_soft", "hubert_discrete"],
-        default="hubert_soft",
     )
     args = parser.parse_args()
     generate(args)

@@ -18,7 +18,7 @@ class AcousticModel(nn.Module):
         x = self.encoder(x)
         return self.decoder(x, mels)
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def generate(self, x: torch.Tensor) -> torch.Tensor:
         x = self.encoder(x)
         return self.decoder.generate(x)

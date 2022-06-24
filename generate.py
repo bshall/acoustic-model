@@ -13,7 +13,7 @@ def generate(args):
 
     print(f"Generating from {args.in_dir} -> {args.out_dir}")
     for path in tqdm(list(args.in_dir.rglob("*.npy"))):
-        units = np.load("path")
+        units = np.load(path)
         units_dtype = torch.long if args.model == "discrete" else torch.float
         units = torch.tensor(units, dtype=units_dtype).cuda()
 

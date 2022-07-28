@@ -70,7 +70,7 @@ Download and extract the [LJSpeech](https://keithito.com/LJ-Speech-Dataset/) dat
         └───LJ047-0007.wav
 ```
 
-The `train` and `dev` directories should contain the training and validation splits respectively. The splits used for the paper can be found [here](https://github.com/bshall/acoustic-model/releases/tag/v0.2).
+The `train` and `dev` directories should contain the training and validation splits respectively. The splits used for the paper can be found [here](https://github.com/bshall/acoustic-model/releases/tag/v0.1).
 
 ### Step 2: Extract Spectrograms
 

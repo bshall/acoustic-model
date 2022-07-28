@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 
 import torch
@@ -7,14 +8,16 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 class MelDataset(Dataset):
-    def __init__(self, root, train=True, discrete=False):
+    def __init__(self, root: Path, train: bool = True, discrete: bool = False):
         self.discrete = discrete
         self.mels_dir = root / "mels"
         self.units_dir = root / "discrete" if discrete else root / "soft"
 
-        split = "train.txt" if train else "validation.txt"
-        with open(root / split) as file:
-            self.metadata = [line.strip() for line in file]
+        pattern = "train/**/*.npy" if train else "dev/**/*.npy"
+        self.metadata = [
+            path.relative_to(self.mels_dir).with_suffix("")
+            for path in self.mels_dir.rglob(pattern)
+        ]
 
     def __len__(self):
         return len(self.metadata)

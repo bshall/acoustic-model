@@ -47,17 +47,17 @@ def preprocess_dataset(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Preprocess an audio dataset.")
+    parser = argparse.ArgumentParser(description="Extract mel-spectrograms for an audio dataset.")
     parser.add_argument(
         "in_dir",
         metavar="in-dir",
-        help="path to the dataset directory",
+        help="path to the dataset directory.",
         type=Path,
     )
     parser.add_argument(
         "out_dir",
         metavar="out-dir",
-        help="path to the output directory",
+        help="path to the output directory.",
         type=Path,
     )
     args = parser.parse_args()

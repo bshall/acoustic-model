@@ -297,8 +297,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--discrete",
-        action='store_true',
-        help="Use discrete units.",
+        action="store_true",
+        help="use discrete units.",
     )
     args = parser.parse_args()
 

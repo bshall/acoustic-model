@@ -3,8 +3,8 @@ import torch.nn as nn
 from torch.nn.modules.utils import consume_prefix_in_state_dict_if_present
 
 URLS = {
-    "hubert-discrete": "https://github.com/bshall/acoustic-model/releases/download/v0.1/hubert-discrete-ffc42c75.pt",
-    "hubert-soft": "https://github.com/bshall/acoustic-model/releases/download/v0.1/hubert-soft-aa8d82f5.pt",
+    "hubert-discrete": "https://github.com/bshall/acoustic-model/releases/download/v0.1/hubert-discrete-d49e1c77.pt",
+    "hubert-soft": "https://github.com/bshall/acoustic-model/releases/download/v0.1/hubert-soft-0321fd7e.pt",
 }
 
 
@@ -127,7 +127,7 @@ def _acoustic(
     if pretrained:
         checkpoint = torch.hub.load_state_dict_from_url(URLS[name], progress=progress)
         consume_prefix_in_state_dict_if_present(checkpoint, "module.")
-        acoustic.load_state_dict(checkpoint)
+        acoustic.load_state_dict(checkpoint["acoustic-model"])
         acoustic.eval()
     return acoustic
 

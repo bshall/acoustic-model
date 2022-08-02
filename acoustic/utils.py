@@ -81,8 +81,11 @@ def load_checkpoint(
     logger.info(f"Loading checkpoint from {load_path}")
     checkpoint = torch.load(load_path, map_location={"cuda:0": f"cuda:{rank}"})
     acoustic.load_state_dict(checkpoint["acoustic-model"])
-    optimizer.load_state_dict(checkpoint["optimizer"])
-    return checkpoint["step"], checkpoint["loss"]
+    if "optimizer" in checkpoint:
+        optimizer.load_state_dict(checkpoint["optimizer"])
+    step = checkpoint.get("step", 0)
+    loss = checkpoint.get("loss", float("inf"))
+    return step, loss
 
 
 def plot_spectrogram(spectrogram):

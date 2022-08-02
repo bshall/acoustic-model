@@ -126,7 +126,7 @@ def _acoustic(
     acoustic = AcousticModel(discrete, upsample)
     if pretrained:
         checkpoint = torch.hub.load_state_dict_from_url(URLS[name], progress=progress)
-        consume_prefix_in_state_dict_if_present(checkpoint, "module.")
+        consume_prefix_in_state_dict_if_present(checkpoint["acoustic-model"], "module.")
         acoustic.load_state_dict(checkpoint["acoustic-model"])
         acoustic.eval()
     return acoustic

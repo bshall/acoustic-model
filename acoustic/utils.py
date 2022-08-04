@@ -57,7 +57,7 @@ def save_checkpoint(
     logger,
 ):
     state = {
-        "acoustic-model": acoustic.module.state_dict(),
+        "acoustic-model": acoustic.state_dict(),
         "optimizer": optimizer.state_dict(),
         "step": step,
         "loss": loss,

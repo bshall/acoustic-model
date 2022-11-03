@@ -243,7 +243,7 @@ def train(rank, world_size, args):
                     )
 
                 new_best = best_loss > validation_loss.value
-                if new_best or global_step % CHECKPOINT_INTERVAL:
+                if new_best or global_step % CHECKPOINT_INTERVAL == 0:
                     if new_best:
                         logger.info("-------- new best model found!")
                         best_loss = validation_loss.value

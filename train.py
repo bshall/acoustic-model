@@ -69,7 +69,7 @@ def train(rank, world_size, args):
     # Initialize models and optimizer
     ####################################################################################
 
-    acoustic = AcousticModel().to(rank)
+    acoustic = AcousticModel(discrete=args.discrete).to(rank)
 
     acoustic = DDP(acoustic, device_ids=[rank])
 
@@ -111,6 +111,7 @@ def train(rank, world_size, args):
         shuffle=False,
         num_workers=8,
         pin_memory=True,
+        discrete=args.discrete,
     )
 
     ####################################################################################

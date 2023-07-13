@@ -1,16 +1,14 @@
 import argparse
-from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import cpu_count
+from pathlib import Path
 
 import numpy as np
-from tqdm import tqdm
-
 import torchaudio
 from torchaudio.functional import resample
+from tqdm import tqdm
 
 from acoustic.utils import LogMelSpectrogram
-
 
 melspectrogram = LogMelSpectrogram()
 
@@ -28,26 +26,24 @@ def process_wav(in_path, out_path):
 def preprocess_dataset(args):
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    futures = []
-    executor = ProcessPoolExecutor(max_workers=cpu_count())
+    results = []
     print(f"Extracting features for {args.in_dir}")
-    for in_path in args.in_dir.rglob("*.wav"):
-        relative_path = in_path.relative_to(args.in_dir)
-        out_path = args.out_dir / relative_path.with_suffix("")
+    for in_path in tqdm(list(args.in_dir.rglob(f"*.wav"))):
+        out_path = args.out_dir / in_path.relative_to(args.in_dir)
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        futures.append(executor.submit(process_wav, in_path, out_path))
-
-    results = [future.result() for future in tqdm(futures)]
+        results.append(process_wav(in_path, out_path))
 
     lengths = {path.stem: length for path, length in results}
     frames = sum(lengths.values())
     frame_shift_ms = 160 / 16000
     hours = frames * frame_shift_ms / 3600
-    print(f"Wrote {len(lengths)} utterances, {frames} frames ({hours:.2f} hours)")
+    print(
+        f"Wrote {len(lengths)} utterances, {frames} frames ({hours:.2f} hours)")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Extract mel-spectrograms for an audio dataset.")
+    parser = argparse.ArgumentParser(
+        description="Extract mel-spectrograms for an audio dataset.")
     parser.add_argument(
         "in_dir",
         metavar="in-dir",

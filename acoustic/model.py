@@ -1,3 +1,5 @@
+from typing import Union
+
 import torch
 import torch.nn as nn
 from torch.nn.modules.utils import consume_prefix_in_state_dict_if_present
@@ -122,10 +124,13 @@ def _acoustic(
     upsample: bool,
     pretrained: bool = True,
     progress: bool = True,
+    map_location: Union[torch.device, str] = "cpu",
 ) -> AcousticModel:
     acoustic = AcousticModel(discrete, upsample)
     if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(URLS[name], progress=progress)
+        checkpoint = torch.hub.load_state_dict_from_url(
+            URLS[name], progress=progress, map_location=map_location
+        )
         consume_prefix_in_state_dict_if_present(checkpoint["acoustic-model"], "module.")
         acoustic.load_state_dict(checkpoint["acoustic-model"])
         acoustic.eval()
@@ -135,6 +140,7 @@ def _acoustic(
 def hubert_discrete(
     pretrained: bool = True,
     progress: bool = True,
+    map_location: Union[torch.device, str] = "cpu",
 ) -> AcousticModel:
     r"""HuBERT-Discrete acoustic model from `"A Comparison of Discrete and Soft Speech Units for Improved Voice Conversion"`.
     Args:
@@ -147,12 +153,14 @@ def hubert_discrete(
         upsample=True,
         pretrained=pretrained,
         progress=progress,
+        map_location=map_location,
     )
 
 
 def hubert_soft(
     pretrained: bool = True,
     progress: bool = True,
+    map_location: Union[torch.device, str] = "cpu",
 ) -> AcousticModel:
     r"""HuBERT-Soft acoustic model from `"A Comparison of Discrete and Soft Speech Units for Improved Voice Conversion"`.
     Args:
@@ -165,4 +173,5 @@ def hubert_soft(
         upsample=True,
         pretrained=pretrained,
         progress=progress,
+        map_location=map_location,
     )

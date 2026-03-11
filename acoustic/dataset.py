@@ -1,10 +1,10 @@
 from pathlib import Path
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.utils.data import Dataset
 from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import Dataset
 
 
 class MelDataset(Dataset):
@@ -13,7 +13,7 @@ class MelDataset(Dataset):
         self.mels_dir = root / "mels"
         self.units_dir = root / "discrete" if discrete else root / "soft"
 
-        pattern = "train/**/*.npy" if train else "dev/**/*.npy"
+        pattern = "train-*/**/*.npy" if train else "dev-*/**/*.npy"
         self.metadata = [
             path.relative_to(self.mels_dir).with_suffix("")
             for path in self.mels_dir.rglob(pattern)
